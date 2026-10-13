@@ -1,0 +1,9 @@
+{
+  "version": "1.1.0",
+  "date": "2026-11-01",
+  "url": "https://contoh.example/unduh",
+  "notes": {
+    "id": ["Contoh catatan rilis dalam Bahasa Indonesia."],
+    "en": ["Example release note in English."]
+  }
+}

@@ -1,0 +1,65 @@
+<title>Editor Deck Anki</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/*CSS*/
+</style>
+<div id="app">
+  <header class="topbar">
+    <button class="btn icon ghost sidebtn" id="btn-side" aria-label="Buka panel deck" title="Deck"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <div class="brand"><h1>Editor Deck Anki</h1><div class="docname" id="docname"></div></div>
+    <div class="tgroup">
+      <button class="btn" id="btn-open" title="Buka .apkg, .csv, .txt"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5h5.8l2 2.2h9.2v10.3h-17z"/></svg></span>Buka</button>
+      <button class="btn ghost hide-sm" id="btn-new" title="Koleksi baru">Baru</button>
+      <button class="btn ghost hide-sm" id="btn-import" title="Impor teks atau CSV">Impor CSV/TXT</button>
+    </div>
+    <span class="vsep"></span>
+    <div class="tgroup">
+      <button class="btn icon ghost" id="btn-undo" aria-label="Urungkan" title="Urungkan (Ctrl+Z)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 010 11H11"/></svg></button>
+      <button class="btn icon ghost" id="btn-redo" aria-label="Ulangi" title="Ulangi (Ctrl+Y)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 000 11H13"/></svg></button>
+    </div>
+    <span class="spacer-flex"></span>
+    <div class="tgroup">
+      <button class="btn ghost hide-sm" id="btn-find" title="Cari dan ganti">Cari &amp; ganti</button>
+      <button class="btn ghost" id="btn-tools" title="Alat lain">Alat ▾</button>
+      <button class="btn primary" id="btn-save" title="Simpan / ekspor (Ctrl+S)">Simpan / ekspor</button>
+      <button class="btn icon ghost" id="btn-theme" aria-label="Ganti tema" title="Tema"></button>
+      <button class="btn icon ghost" id="btn-help" aria-label="Bantuan" title="Bantuan"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.7 9.5a2.4 2.4 0 114 1.7c-.8.7-1.7 1.1-1.7 2.3M12 16.5h.01"/></svg></button>
+    </div>
+  </header>
+  <div id="banner" class="banner" hidden><span>Ini data contoh, bukan deck kamu.</span><button class="btn" id="banner-open">Buka file .apkg milikmu</button></div>
+  <div id="loading" class="empty">Memuat mesin basis data…</div>
+  <div id="fatal" class="empty" hidden><h3>Pustaka gagal dimuat</h3><p>Editor butuh sql.js dan JSZip dari jsDelivr. Periksa koneksi, lalu muat ulang halaman.</p><p class="muted" id="fatal-msg"></p></div>
+  <div class="body" id="main-area">
+    <div class="scrim"></div>
+    <aside class="side" aria-label="Deck, tipe catatan, dan tag"><div class="side-scroll" id="side-scroll"></div></aside>
+    <main class="main">
+      <div class="mtool">
+        <div class="searchbox"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></span><input type="search" id="q" placeholder="Cari… contoh: deck:第1週 tag:week1 front:駐*" aria-label="Cari catatan" autocomplete="off"><button class="btn sm icon ghost clr" id="qclr" hidden aria-label="Hapus pencarian"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+        <select id="sort" aria-label="Urutkan"><option value="id">Urutan dibuat</option><option value="f1">Kolom utama</option><option value="f2">Isi lainnya</option><option value="deck">Deck</option><option value="tags">Tag</option><option value="model">Tipe</option><option value="mod">Terakhir diubah</option></select>
+        <button class="btn icon" id="btn-dir" aria-label="Balik urutan" title="Balik urutan"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14M4.5 15.5L8 19l3.5-3.5M16 19V5M12.5 8.5L16 5l3.5 3.5"/></svg></button>
+        <button class="btn primary" id="btn-add"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Catatan baru</button>
+        <button class="btn icon" id="btn-panel" aria-label="Panel editor" title="Panel editor"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M14.5 4.5v15"/></svg></button>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="bulk" id="bulk" hidden></div>
+      <div class="tablewrap">
+        <div class="thead" style="--cols:28px minmax(110px,1.1fr) minmax(120px,1.6fr) minmax(110px,1fr) minmax(90px,.8fr) 120px" role="row">
+          <span><input type="checkbox" id="chk-all" aria-label="Pilih semua"></span>
+          <button data-sort="f1">Kolom utama <span class="arr"></span></button><button data-sort="f2">Isi lainnya <span class="arr"></span></button>
+          <button data-sort="deck" class="hide-sm">Deck <span class="arr"></span></button><button data-sort="tags" class="hide-sm">Tag <span class="arr"></span></button><button data-sort="model" class="hide-sm">Tipe <span class="arr"></span></button>
+        </div>
+        <div class="tbody" id="tbody" tabindex="0" role="grid" aria-label="Daftar catatan"><div class="tspace" id="tspace" style="--cols:28px minmax(110px,1.1fr) minmax(120px,1.6fr) minmax(110px,1fr) minmax(90px,.8fr) 120px"></div><div class="empty" id="empty" hidden></div></div>
+      </div>
+      <div class="statusbar" id="status"></div>
+    </main>
+    <section class="editor" id="editor" aria-label="Editor catatan"></section>
+  </div>
+</div>
+<div id="modal-root"></div><div id="toast-root"></div>
+<input type="file" id="file-open" hidden accept=".apkg,.colpkg,.zip,.csv,.tsv,.txt,.text">
+<input type="file" id="file-media" hidden accept="image/*,audio/*">
+<script src="https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/sql-asm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+/*JS*/
+</script>

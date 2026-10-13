@@ -1,0 +1,112 @@
+{
+  "name": "anki-deck-editor",
+  "productName": "Editor Deck Anki",
+  "version": "1.0.0",
+  "description": "Editor deck Anki (.apkg, CSV, TXT) / Anki deck editor",
+  "author": {
+    "name": "Editor Deck Anki",
+    "email": "noreply@example.invalid"
+  },
+  "license": "MIT",
+  "main": "main.js",
+  "private": true,
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^26.15.3",
+    "jszip": "^3.10.1",
+    "sql.js": "^1.8.0"
+  },
+  "homepage": "https://example.invalid/",
+  "scripts": {
+    "start": "node build_app.js && electron .",
+    "build:app": "node build_app.js",
+    "dist:win": "node build_app.js && electron-builder --win --x64",
+    "dist:linux": "node build_app.js && electron-builder --linux dir --x64 && bash scripts/package-zips.sh",
+    "dist:mac": "node build_app.js && electron-builder --mac dir --x64 --arm64 && bash scripts/package-zips.sh",
+    "release": "bash scripts/release.sh"
+  },
+  "build": {
+    "appId": "app.ankideckeditor.desktop",
+    "productName": "Editor Deck Anki",
+    "copyright": "Copyright © 2026",
+    "compression": "normal",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*",
+      "package.json",
+      "build/icon.png"
+    ],
+    "fileAssociations": [
+      {
+        "ext": "apkg",
+        "name": "Anki Package",
+        "role": "Editor"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "multiLanguageInstaller": true,
+      "installerLanguages": [
+        "en_US",
+        "id_ID"
+      ],
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "Editor-Deck-Anki-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "Editor-Deck-Anki-Portable-${version}.${ext}"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "Education"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "public.app-category.education",
+      "identity": null
+    },
+    "publish": null
+  }
+}
