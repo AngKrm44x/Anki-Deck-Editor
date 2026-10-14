@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('native', {
   setLang: l => ipcRenderer.invoke('set-lang', l),
   ready: () => ipcRenderer.invoke('ready'),
   saveFile: (name, data) => ipcRenderer.invoke('save-file', name, data),
+  httpRequest: spec => ipcRenderer.invoke('http-request', spec),
   checkUpdate: url => ipcRenderer.invoke('check-update', url),
   openExternal: url => ipcRenderer.invoke('open-external', url),
   onMenu: cb => ipcRenderer.on('menu', (_e, id) => cb(id)),

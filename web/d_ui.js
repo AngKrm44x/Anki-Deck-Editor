@@ -251,7 +251,7 @@ function renderBulk() {
   b.append(h('b', { text: n + ' dipilih' }),
     btn('Pindah deck', 'folder', () => dlgMoveDeck(ids())), btn('Tambah tag', 'tag', () => dlgTagOp(ids(), 'add')), btn('Hapus tag', 'tag', () => dlgTagOp(ids(), 'remove')),
     btn('Cari & ganti', 'replace', () => dlgFindReplace({ scope: 'sel' })), btn('Tangguhkan', 'pause', () => doSuspend(ids(), true)), btn('Aktifkan', 'check', () => doSuspend(ids(), false)),
-    btn('Gandakan', 'copy', () => doDuplicate(ids())), btn('Ubah tipe', 'file', () => dlgChangeType(ids())),
+    btn('Gandakan', 'copy', () => doDuplicate(ids())), btn('Ubah tipe', 'file', () => dlgChangeType(ids())), btn('Terjemahkan', 'layers', () => dlgTranslate({ scope: 'sel' })),
     btn('Hapus', 'trash', () => doDelete(ids()), 'danger'), h('span', { class: 'spacer-flex' }), btn('Batal pilih', 'x', () => { UI.sel.clear(); refresh(); }, 'ghost'));
 }
 function renderStatus() {

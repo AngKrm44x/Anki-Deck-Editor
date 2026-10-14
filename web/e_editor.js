@@ -75,7 +75,9 @@ function fieldEditor(model, i, getVal, setVal, getAll) {
     if (ta.hidden) { ta.value = getVal(); ta.hidden = false; ce.hidden = true; ta.focus(); labelBtn.textContent = 'Visual'; }
     else { ce.innerHTML = sanitizeHtml(ta.value); ce.hidden = false; ta.hidden = true; ce.focus(); labelBtn.textContent = 'HTML'; }
   });
-  return h('div', { class: 'fld' }, h('div', { class: 'flabel' }, h('span', { text: model.flds[i].name }), labelBtn), ce, ta);
+  const apply = v => { ce.innerHTML = sanitizeHtml(v); ta.value = v; setVal(v); };
+  const trBtn = i > 0 ? h('button', { type: 'button', title: 'Terjemahkan otomatis dari field sumber', text: 'Terjemahkan', onclick: () => translateOneField(model, i, getAll, apply) }) : null;
+  return h('div', { class: 'fld' }, h('div', { class: 'flabel' }, h('span', { text: model.flds[i].name }), h('span', { style: { display: 'flex', gap: '10px', alignItems: 'center' } }, trBtn, labelBtn)), ce, ta);
 }
 function tagEditor(tags, onChange) {
   let cur = tags.slice(); const box = h('div', { class: 'tagbox' });

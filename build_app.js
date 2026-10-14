@@ -4,7 +4,7 @@ const root = __dirname, web = path.join(root, 'web'), out = path.join(root, 'app
 fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(path.join(out, 'vendor'), { recursive: true });
 const rd = (...p) => fs.readFileSync(path.join(...p), 'utf8');
 const css = rd(web, 'style.css');
-let js = ['a_util.js', 'b_data.js', 'c_engine.js', 'd_ui.js', 'e_editor.js', 'f_dialogs.js'].map(f => rd(web, f) + '\n').join('');
+let js = ['a_util.js', 'b_data.js', 'c_engine.js', 'd_ui.js', 'e_editor.js', 'f_dialogs.js', 'i_translate.js'].map(f => rd(web, f) + '\n').join('');
 js += rd(web, 'g_io.js').replace('async function saveBlob(', 'async function saveBlobWeb(') + '\n';
 js += rd(root, 'overlay', 'i18n_en.js') + '\n';
 js += rd(root, 'overlay', 'h_desktop.js').split('__UPDATE_URL__').join(process.env.UPDATE_URL || '');

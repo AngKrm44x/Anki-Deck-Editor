@@ -1,7 +1,7 @@
 {
   "name": "anki-deck-editor",
   "productName": "Editor Deck Anki",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Editor deck Anki (.apkg, CSV, TXT) / Anki deck editor",
   "author": {
     "name": "Editor Deck Anki",

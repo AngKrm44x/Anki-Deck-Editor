@@ -121,6 +121,19 @@ ipcMain.handle('check-update', async (_e, url) => {
     return { ok: true, text };
   } catch (e) { return { ok: false, error: String((e && e.message) || e) }; }
 });
+ipcMain.handle('http-request', async (_e, spec) => {
+  try {
+    const url = String((spec && spec.url) || ''); if (!/^https:\/\//i.test(url)) return { error: 'URL harus diawali https://' };
+    const method = String(spec.method || 'GET').toUpperCase(); if (method !== 'GET' && method !== 'POST') return { error: 'Metode tidak diizinkan' };
+    const headers = { 'User-Agent': 'EditorDeckAnki/' + app.getVersion() };
+    for (const k of Object.keys(spec.headers || {})) if (/^(content-type|accept|authorization)$/i.test(k)) headers[k] = String(spec.headers[k]);
+    const body = spec.body == null ? undefined : String(spec.body); if (body && body.length > 200000) return { error: 'Permintaan terlalu besar' };
+    const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 15000);
+    const res = await net.fetch(url, { method, headers, body: method === 'POST' ? body : undefined, signal: ctl.signal }); clearTimeout(t);
+    const text = await res.text(); if (text.length > 2e6) return { error: 'Respons terlalu besar' };
+    return { ok: res.ok, status: res.status, text };
+  } catch (e) { return { error: String((e && e.message) || e) }; }
+});
 ipcMain.handle('open-external', (_e, url) => { if (/^https:\/\//i.test(String(url))) { shell.openExternal(url); return true; } return false; });
 
 /* ---------- siklus hidup ---------- */

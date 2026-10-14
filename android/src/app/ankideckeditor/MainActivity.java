@@ -463,5 +463,67 @@ public class MainActivity extends Activity {
                 }
             }).start();
         }
+
+        @JavascriptInterface
+        public void httpRequest(final String id, final String specJson) {
+            new Thread(new Runnable() {
+                public void run() {
+                    boolean ok = false;
+                    String out;
+                    HttpURLConnection c = null;
+                    try {
+                        JSONObject spec = new JSONObject(specJson);
+                        String url = spec.optString("url", "");
+                        if (!url.startsWith("https://")) throw new IOException("URL harus diawali https://");
+                        String method = spec.optString("method", "GET").toUpperCase(Locale.ROOT);
+                        if (!method.equals("GET") && !method.equals("POST")) throw new IOException("Metode tidak diizinkan");
+                        c = (HttpURLConnection) new URL(url).openConnection();
+                        c.setConnectTimeout(15000);
+                        c.setReadTimeout(15000);
+                        c.setRequestMethod(method);
+                        c.setRequestProperty("User-Agent", "EditorDeckAnki-Android");
+                        JSONObject hd = spec.optJSONObject("headers");
+                        if (hd != null) {
+                            java.util.Iterator<String> it = hd.keys();
+                            while (it.hasNext()) {
+                                String k = it.next();
+                                if (k.equalsIgnoreCase("content-type") || k.equalsIgnoreCase("accept") || k.equalsIgnoreCase("authorization"))
+                                    c.setRequestProperty(k, hd.getString(k));
+                            }
+                        }
+                        if (method.equals("POST") && !spec.isNull("body")) {
+                            byte[] bytes = spec.getString("body").getBytes("UTF-8");
+                            if (bytes.length > 200000) throw new IOException("Permintaan terlalu besar");
+                            c.setDoOutput(true);
+                            OutputStream os = c.getOutputStream();
+                            os.write(bytes);
+                            os.close();
+                        }
+                        int code = c.getResponseCode();
+                        InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream();
+                        java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+                        if (in != null) {
+                            byte[] buf = new byte[8192];
+                            int n;
+                            while ((n = in.read(buf)) > 0) {
+                                bo.write(buf, 0, n);
+                                if (bo.size() > 2000000) throw new IOException("Respons terlalu besar");
+                            }
+                        }
+                        JSONObject r = new JSONObject();
+                        r.put("ok", code >= 200 && code < 300);
+                        r.put("status", code);
+                        r.put("text", bo.toString("UTF-8"));
+                        out = r.toString();
+                        ok = true;
+                    } catch (Exception e) {
+                        out = String.valueOf(e.getMessage());
+                    } finally {
+                        if (c != null) c.disconnect();
+                    }
+                    js("window.__andCb && window.__andCb(" + JSONObject.quote(id) + "," + ok + "," + JSONObject.quote(out) + ")");
+                }
+            }).start();
+        }
     }
 }

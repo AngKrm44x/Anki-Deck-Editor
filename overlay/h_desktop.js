@@ -10,6 +10,7 @@ function androidNative() {
   return {
     info, setLang() { }, ready() { AND.ready(); }, onMenu() { }, onOpenFile(cb) { openCb = cb; },
     openExternal(u) { AND.openUrl(u); return Promise.resolve(true); },
+    httpRequest(spec) { return new Promise(res => { const id = 'h' + (++seq); cbs[id] = (ok, payload) => { if (!ok) return res({ error: payload }); try { res(JSON.parse(payload)); } catch (e) { res({ error: 'Respons tidak valid' }); } }; AND.httpRequest(id, JSON.stringify(spec)); }); },
     checkUpdate(url) { return new Promise(res => { const id = 'c' + (++seq); cbs[id] = (ok, payload) => res(ok ? { ok: true, text: payload } : { ok: false, error: payload }); AND.httpGet(id, url); }); },
     saveFile(name, data) {
       return new Promise((res, rej) => {
@@ -27,6 +28,9 @@ const NAT = window.native || (AND ? androidNative() : null);
 const APP_VERSION = (NAT && NAT.info && NAT.info.version) || '1.0.0';
 const DEFAULT_UPDATE_URL = '__UPDATE_URL__';
 const CHANGELOG = [
+  { v: '1.1.0', date: '2026-10-14',
+    id: ['Fitur baru: terjemah otomatis ke field belakang kartu (Other content). Tombol Terjemahkan di editor field, di bilah aksi massal, dan menu Alat.', 'Pilihan layanan: MyMemory (gratis), Jisho (Jepang ke Inggris), LibreTranslate, Google Cloud, DeepL.', 'Mode tambahkan, isi jika kosong, atau ganti. Hasil disimpan di cache dan satu langkah undo untuk semua perubahan.', 'Teks dikirim ke layanan pihak ketiga yang dipilih. Kunci API disimpan lokal di perangkat.'],
+    en: ['New: auto translate into the back-of-card field (Other content). Translate button in the field editor, the bulk action bar and the Tools menu.', 'Choice of service: MyMemory (free), Jisho (Japanese to English), LibreTranslate, Google Cloud, DeepL.', 'Append, fill-if-empty or replace modes. Results are cached and all changes undo in one step.', 'Text is sent to the third-party service you choose. API keys are stored locally on the device.'] },
   { v: '1.0.0', date: '2026-10-12',
     id: ['Rilis pertama versi desktop: installer Windows, portable .exe, serta zip untuk Linux dan Mac.', 'Dua bahasa: Indonesia dan Inggris, bisa diganti dari menu Bahasa atau tombol ID/EN.', 'Simpan dan buka file lewat dialog sistem; hasil ekspor .apkg langsung berekstensi .apkg.', 'Buka file .apkg lewat klik dua kali atau tarik-lepas ke jendela.', 'Menu aplikasi, dialog Tentang, Changelog, dan Cek pembaruan.', 'Semua pustaka disertakan, jadi bisa dipakai tanpa internet.', 'Versi Android (APK, Android 7.0 ke atas) dengan tombol kembali dan menu Buka dengan.'],
     en: ['First desktop release: Windows installer, portable .exe, and zip builds for Linux and Mac.', 'Two languages: Indonesian and English, switchable from the Language menu or the ID/EN button.', 'Open and save files through native system dialogs; exported .apkg packages are saved with the .apkg extension.', 'Open .apkg files by double-clicking them or dragging them onto the window.', 'Application menu, About dialog, Changelog, and Check for updates.', 'All libraries are bundled, so it works without an internet connection.', 'Android version (APK, Android 7.0 and up) with back-button support and Open with.'] },
